@@ -75,15 +75,12 @@
 
   #done{background:radial-gradient(circle at 50% 35%, rgba(200,162,74,.10), transparent 60%),var(--bg);}
   #done .frame{display:flex;gap:56px;align-items:center;flex-wrap:wrap;justify-content:center;}
-  #done .art{border-radius:50%;box-shadow:0 0 0 1px var(--line),0 20px 80px rgba(0,0,0,.6);background:radial-gradient(circle at 50% 50%, #14141a, #0b0b0d 70%);animation:reveal 1.1s cubic-bezier(.2,.9,.2,1);}
-  @keyframes reveal{0%{opacity:0;transform:scale(.7) rotate(-25deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+  #done .art{border-radius:50%;box-shadow:0 0 0 1px var(--line),0 20px 80px rgba(0,0,0,.6);background:radial-gradient(circle at 50% 50%, #14141a, #0b0b0d 70%);animation:fadein .5s ease;}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
   #done .info{max-width:350px;}
   #done h2{font-size:32px;margin:0 0 6px;font-weight:normal;letter-spacing:.03em;}
   #done .meaning{color:var(--muted);line-height:1.7;font-size:16px;margin:0 0 24px;}
   #done .meaning b{color:var(--gold-soft);font-weight:normal;}
-  #done .qr{display:flex;align-items:center;gap:16px;margin-bottom:24px;}
-  #done .qrlabel{color:var(--muted);font-size:13px;line-height:1.5;font-family:Arial,sans-serif;}
-  #done .qrlabel b{color:var(--text);font-weight:600;}
   #done .acts{display:flex;gap:12px;}
   .en,[data-en]{display:none;}
   body.en .ru{display:none;}
@@ -156,11 +153,6 @@
     <div class="info">
       <h2><span class="ru">Ваш узор готов</span><span class="en">Your pattern is ready</span></h2>
       <p class="meaning" id="meaning"></p>
-      <div class="qr">
-        <canvas id="qr" width="118" height="118" style="border-radius:8px"></canvas>
-        <div class="qrlabel"><b><span class="ru">Заберите на телефон</span><span class="en">Take it home</span></b><br>
-          <span class="ru">наведите камеру — узор станет обоями</span><span class="en">scan to get it as wallpaper</span></div>
-      </div>
       <div class="acts">
         <button class="btn primary" onclick="download()"><span class="ru">Скачать</span><span class="en">Download</span></button>
         <button class="btn" onclick="go('attract');reset()"><span class="ru">Заново</span><span class="en">Again</span></button>
@@ -353,6 +345,36 @@ function render(){
 }
 render();
 
+/* ---- "growing" build animation: elements sprout from centre outward ---- */
+let animRAF=null;
+function easeOutBack(t){const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);}
+function animateBuild(g, list, st, scale, guides, onDone){
+  if(animRAF)cancelAnimationFrame(animRAF);
+  const order=list.map((s,i)=>i).sort((a,b)=>list[a].r-list[b].r);
+  const n=order.length, win=460, dur=Math.min(1700,520+n*150), stag=n>1?(dur-win)/(n-1):0;
+  const t0=performance.now();
+  function frame(now){
+    const t=now-t0;
+    g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,g.canvas.width,g.canvas.height);
+    g.save();g.scale(scale,scale);
+    if(guides)guides();
+    order.forEach((idx,k)=>{
+      const p=Math.max(0,Math.min(1,(t-k*stag)/win));if(p<=0)return;
+      const e=Math.max(0,easeOutBack(p));
+      const s=list[idx],s2={r:s.r,theta:s.theta,motif:s.motif,color:s.color,size:s.size*(0.1+0.9*e)};
+      g.globalAlpha=Math.min(1,p*1.5);
+      if(st.shape==='square')drawStampSquare(g,s2,st.sqMode);else drawStampRound(g,s2,st.fold,st.mirror);
+    });
+    g.globalAlpha=1;g.restore();
+    if(t<dur)animRAF=requestAnimationFrame(frame);else{animRAF=null;if(onDone)onDone();}
+  }
+  animRAF=requestAnimationFrame(frame);
+}
+function growStage(){
+  if(!stamps.length){render();return;}
+  animateBuild(ctx,stamps,{shape,fold,mirror,sqMode},1,()=>drawGuides(),render);
+}
+
 /* ===== Ready-made sketches from the source, in two forms:
    ROUND (radial rosettes) and SQUARE (axial carpet panels — borders,
    tree of life, medallions). Only authentic signs; a loaded sketch stays editable. ===== */
@@ -441,7 +463,7 @@ function setSqMode(m){sqMode=m;syncControls();render();}
 function loadPreset(p){shape=p.shape;selEl=-1;color=p.color||'#e6c877';
   if(shape==='round'){fold=p.fold;mirror=p.mirror;}else{sqMode=p.sqMode||2;}
   stamps=p.stamps.map(o=>({r:o.r,theta:o.theta==null?-Math.PI/2:o.theta,motif:o.m,size:o.size,color:o.color||p.color||'#e6c877'}));
-  syncControls();render();renderElements();}
+  syncControls();renderElements();growStage();}
 function randomCompose(){
   color='#e6c877';stamps=[];selEl=-1;const M=MOTIFS.length,rnd=n=>Math.floor(Math.random()*n);
   if(shape==='square'){
@@ -455,7 +477,7 @@ function randomCompose(){
     const rings=2+rnd(3);let r=105;for(let i=0;i<rings;i++){if(r>355)break;
       stamps.push({r,theta:-1.5708,motif:rnd(M),color,size:r<150?.8:r<270?1.0:1.15});r+=70+Math.random()*45;}
   }
-  syncControls();render();renderElements();}
+  syncControls();renderElements();growStage();}
 renderVariants(shape);renderElements();
 
 function addAt(px,py){
@@ -488,7 +510,6 @@ function setLang(l,el){document.body.classList.toggle('en',l==='en');el.parentNo
 function finish(){
   const art=document.getElementById('art'),g=art.getContext('2d');
   art.style.borderRadius=shape==='square'?'16px':'50%';
-  g.clearRect(0,0,460,460);g.save();g.scale(460/820,460/820);stamps.forEach(s=>drawStamp(g,s));g.restore();
   const counts={};stamps.forEach(s=>counts[s.motif]=(counts[s.motif]||0)+1);
   const top=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
   const en=document.body.classList.contains('en');
@@ -496,15 +517,13 @@ function finish(){
   else{const m=MOTIFS[top];document.getElementById('meaning').innerHTML=en
     ?`In the heart of your pattern is <b>${m.nm} — ${m.gloss_en}</b>. ${m.mean_en} This is your own composition.`
     :`В основе вашего узора — <b>${m.nm} — ${m.gloss_ru}</b>. ${m.mean_ru} Это ваша личная композиция.`;}
-  drawQR();go('done');
+  go('done');
+  const S=460/820;
+  animateBuild(g,stamps,{shape,fold,mirror,sqMode},S,null,()=>{
+    g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,460,460);g.save();g.scale(S,S);stamps.forEach(s=>drawStamp(g,s));g.restore();});
 }
 function download(){const a=document.createElement('a');a.download='vainakh-pattern.png';a.href=document.getElementById('art').toDataURL('image/png');a.click();}
 
-function drawQR(){const q=document.getElementById('qr'),g=q.getContext('2d'),N=21,s=118/N;
-  g.fillStyle='#fff';g.fillRect(0,0,118,118);g.fillStyle='#111';let seed=7;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
-  for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(rnd()>.5)g.fillRect(x*s,y*s,s,s);}
-  const eye=(ox,oy)=>{g.fillStyle='#fff';g.fillRect(ox*s,oy*s,7*s,7*s);g.fillStyle='#111';g.fillRect(ox*s,oy*s,7*s,s);g.fillRect(ox*s,(oy+6)*s,7*s,s);g.fillRect(ox*s,oy*s,s,7*s);g.fillRect((ox+6)*s,oy*s,s,7*s);g.fillRect((ox+2)*s,(oy+2)*s,3*s,3*s);};
-  eye(0,0);eye(N-7,0);eye(0,N-7);}
 
 const spin=document.getElementById('markspin');let sa='';for(let i=0;i<8;i++){const a=i/8*6.283;sa+=`<line x1="${Math.cos(a)*18}" y1="${Math.sin(a)*18}" x2="${Math.cos(a)*40}" y2="${Math.sin(a)*40}"/>`;}spin.innerHTML=sa+'<circle r="14"/>';
 </script>
