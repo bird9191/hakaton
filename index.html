@@ -22,17 +22,17 @@
   .src{position:absolute;bottom:20px;left:0;right:0;text-align:center;color:#5c5a52;font-size:11px;letter-spacing:.02em;font-family:Arial,sans-serif;padding:0 20px;line-height:1.5;}
 
   #workshop{flex-direction:row;}
-  .stagewrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;}
+  .stagewrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:auto;}
   #stage{background:radial-gradient(circle at 50% 50%, #14141a, #0b0b0d 70%);border-radius:50%;
      box-shadow:0 0 0 1px var(--line),0 20px 80px rgba(0,0,0,.6),inset 0 0 60px rgba(0,0,0,.5);touch-action:none;transition:border-radius .3s;}
   #stage.sq{border-radius:16px;}
-  .side{width:310px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;height:100%;overflow-y:auto;}
-  .side h2{font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-soft);margin:20px 22px 4px;font-family:Arial,sans-serif;font-weight:600;}
-  .side .cap{color:var(--muted);font-size:12px;margin:0 22px 12px;font-family:Arial,sans-serif;line-height:1.5;}
-  .palette{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:0 22px;}
-  .subh{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft);margin:16px 22px 8px;font-family:Arial,sans-serif;font-weight:600;}
-  .rnd{margin:0 22px 10px;}
-  .rnd button{width:100%;padding:12px;border-radius:10px;border:1px solid var(--gold);background:rgba(200,162,74,.08);color:var(--gold-soft);font-size:14px;cursor:pointer;font-family:Arial,sans-serif;letter-spacing:.05em;transition:.15s;}
+  .side{width:310px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;height:100%;overflow:hidden;}
+  .side h2{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-soft);margin:14px 22px 3px;font-family:Arial,sans-serif;font-weight:600;}
+  .side .cap{color:var(--muted);font-size:12px;margin:0 22px 8px;font-family:Arial,sans-serif;line-height:1.4;}
+  .palette{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 22px;}
+  .subh{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft);margin:12px 22px 6px;font-family:Arial,sans-serif;font-weight:600;}
+  .rnd{margin:0 22px 8px;}
+  .rnd button{width:100%;padding:10px;border-radius:10px;border:1px solid var(--gold);background:rgba(200,162,74,.08);color:var(--gold-soft);font-size:14px;cursor:pointer;font-family:Arial,sans-serif;letter-spacing:.05em;transition:.15s;}
   .rnd button:hover{background:rgba(200,162,74,.18);}
   .varhead{color:var(--muted);font-size:11px;margin:0 22px 8px;font-family:Arial,sans-serif;letter-spacing:.04em;}
   .elhead{color:var(--gold-soft);font-size:11px;margin:14px 22px 8px;font-family:Arial,sans-serif;letter-spacing:.03em;line-height:1.45;}
@@ -49,20 +49,20 @@
   .preset:hover{border-color:var(--gold);}
   .preset .pn{font-size:8.5px;color:var(--muted);font-family:Arial,sans-serif;text-align:center;line-height:1.05;margin-top:1px;}
   .preset img{width:100%;height:auto;display:block;border-radius:6px;}
-  .swatch-el{aspect-ratio:1;background:#0e0e12;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.15s;padding:4px;}
+  .swatch-el{aspect-ratio:1;background:#0e0e12;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.15s;padding:3px;}
   .swatch-el:hover{border-color:var(--gold);}
   .swatch-el.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 18px rgba(200,162,74,.25);}
-  .swatch-el .nm{font-size:9px;color:var(--muted);font-family:Arial,sans-serif;margin-top:1px;text-align:center;line-height:1.1;}
-  .swatch-el img{width:64%;height:64%;object-fit:contain;display:block;}
-  .row{display:flex;gap:8px;padding:14px 22px 2px;flex-wrap:wrap;align-items:center;}
+  .swatch-el .nm{font-size:7.5px;color:var(--muted);font-family:Arial,sans-serif;margin-top:0;text-align:center;line-height:1.05;}
+  .swatch-el img{width:56%;height:56%;object-fit:contain;display:block;}
+  .row{display:flex;gap:8px;padding:9px 22px 2px;flex-wrap:wrap;align-items:center;}
   .lab{color:var(--muted);font-size:11px;letter-spacing:.15em;text-transform:uppercase;width:100%;margin-bottom:2px;font-family:Arial,sans-serif;}
   .chip{padding:7px 13px;background:#0e0e12;border:1px solid var(--line);border-radius:20px;color:var(--text);font-size:14px;cursor:pointer;font-family:Arial,sans-serif;transition:.15s;}
   .chip:hover{border-color:var(--gold);}
   .chip.on{background:var(--gold);color:#1a1408;border-color:var(--gold);}
   .color-dot{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
   .color-dot.on{border-color:#fff;}
-  .side .spacer{flex:1;min-height:8px;}
-  .btns{padding:14px 22px 20px;display:flex;gap:10px;border-top:1px solid var(--line);}
+  .side .spacer{flex:1;min-height:2px;}
+  .btns{padding:8px 22px 12px;display:flex;gap:10px;border-top:1px solid var(--line);}
   .btn{flex:1;padding:13px;border-radius:10px;border:1px solid var(--line);background:#0e0e12;color:var(--text);font-size:14px;cursor:pointer;font-family:Arial,sans-serif;transition:.15s;letter-spacing:.05em;}
   .btn:hover{border-color:var(--gold);}
   .btn.primary{background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#1a1408;border:none;font-weight:700;flex:1.4;}
@@ -106,11 +106,9 @@
     <div class="hintline"><span class="ru">Выберите знак справа и рисуйте пальцем по кругу — узор соберётся симметрично</span>
       <span class="en">Pick a sign and draw on the circle — the pattern mirrors itself</span></div>
   </div>
-  <div class="langtog"><div class="chip on" onclick="setLang('ru',this)">РУС</div><div class="chip" onclick="setLang('en',this)">ENG</div></div>
   <aside class="side">
     <h2><span class="ru">Знаки</span><span class="en">Signs</span></h2>
-    <p class="cap"><span class="ru">Подлинные элементы чеченского орнамента. Коснитесь знака, затем холста.</span>
-       <span class="en">Authentic Chechen ornament elements. Tap a sign, then the canvas.</span></p>
+    <p class="cap"><span class="ru">Коснитесь знака, затем холста.</span><span class="en">Tap a sign, then the canvas.</span></p>
     <div class="palette" id="palette"></div>
     <div class="subh"><span class="ru">Не знаете, с чего начать?</span><span class="en">Need a starting point?</span></div>
     <div class="rnd"><button onclick="randomCompose()">🎲 <span class="ru">Случайный узор</span><span class="en">Random pattern</span></button></div>
@@ -483,8 +481,29 @@ function addAt(px,py){
   const x=(px-rect.left)*(canvas.width/rect.width)-CX,y=(py-rect.top)*(canvas.height/rect.height)-CY;
   const r=Math.hypot(x,y);if(r<8||r>380)return;
   const size=r<150?.85:r<270?1.05:1.25;
-  stamps.push({r,theta:Math.atan2(y,x),motif:sel,color,size});selEl=-1;render();renderElements();
+  // запрет наложения с учётом размера знака: новый знак не ставится, если он
+  // перекрывает любой уже нарисованный (включая все симметричные копии), и не
+  // ставится там, где его собственные копии налезли бы друг на друга
+  const cand={r,theta:Math.atan2(y,x),motif:sel,color,size};
+  const own=stampInstances(cand);
+  for(const [ox,oy,os] of own){const d=Math.hypot(ox-x,oy-y);if(d>0.5&&d<br(size)+br(os))return;}
+  for(const [ox,oy,os] of instancePoints()){ if(Math.hypot(ox-x,oy-y)<br(size)+br(os)) return; }
+  stamps.push(cand);selEl=-1;render();renderElements();
 }
+function br(sz){return 30*sz;}  // приблизительный радиус габарита знака
+function stampInstances(s){
+  const pts=[];
+  if(shape==='square'){
+    const bx=s.r*Math.cos(s.theta),by=s.r*Math.sin(s.theta);
+    pts.push([bx,by,s.size],[-bx,by,s.size]);
+    if(sqMode>=2)pts.push([bx,-by,s.size],[-bx,-by,s.size]);
+  }else{
+    for(let k=0;k<fold;k++){const a=s.theta+k*2*Math.PI/fold;pts.push([s.r*Math.cos(a),s.r*Math.sin(a),s.size]);
+      if(mirror){const a2=-s.theta+k*2*Math.PI/fold;pts.push([s.r*Math.cos(a2),s.r*Math.sin(a2),s.size]);}}
+  }
+  return pts;
+}
+function instancePoints(){const all=[];for(const s of stamps)for(const p of stampInstances(s))all.push(p);return all;}
 let down=false,lastR=-999,lastT=-999;
 canvas.addEventListener('pointerdown',e=>{down=true;lastR=lastT=-999;addAt(e.clientX,e.clientY);});
 canvas.addEventListener('pointermove',e=>{if(!down)return;
