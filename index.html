@@ -44,8 +44,8 @@
   .el .eln{font-size:11px;color:var(--muted);font-family:Arial,sans-serif;}
   .el .x{color:var(--muted);font-size:15px;padding:0 4px;cursor:pointer;font-family:Arial,sans-serif;line-height:1;}
   .el .x:hover{color:#e08b6b;}
-  .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:0 22px;}
-  .preset{aspect-ratio:1;background:#f6f2ea;border:1px solid var(--line);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:.15s;padding:3px;}
+  .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:0 22px;margin-bottom:8px;}
+  .preset{background:#f6f2ea;border:1px solid var(--line);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;transition:.15s;padding:4px 4px 6px;}
   .preset:hover{border-color:var(--gold);}
   .preset .pn{font-size:8.5px;color:var(--muted);font-family:Arial,sans-serif;text-align:center;line-height:1.05;margin-top:1px;}
   .preset img{width:100%;height:auto;display:block;border-radius:6px;}
@@ -512,13 +512,24 @@ function stampInstances(s){
 }
 function instancePoints(){const all=[];for(const s of stamps)for(const p of stampInstances(s))all.push(p);return all;}
 let down=false,lastR=-999,lastT=-999;
-canvas.addEventListener('pointerdown',e=>{down=true;lastR=lastT=-999;addAt(e.clientX,e.clientY);});
-canvas.addEventListener('pointermove',e=>{if(!down)return;
+canvas.addEventListener('pointerdown',e=>{if(pinching)return;down=true;lastR=lastT=-999;addAt(e.clientX,e.clientY);});
+canvas.addEventListener('pointermove',e=>{if(!down||pinching)return;
   const rect=canvas.getBoundingClientRect();
   const x=(e.clientX-rect.left)*(canvas.width/rect.width)-CX,y=(e.clientY-rect.top)*(canvas.height/rect.height)-CY;
   const r=Math.hypot(x,y),t=Math.atan2(y,x);
   if(Math.abs(r-lastR)>36||Math.abs(t-lastT)>.30){lastR=r;lastT=t;addAt(e.clientX,e.clientY);}});
 window.addEventListener('pointerup',()=>down=false);
+
+/* ---- zoom: колёсико мыши / щипок на сенсоре увеличивают-уменьшают рисунок ---- */
+let zoom=1,pinching=false,pinchDist=0;
+function applyZoom(z){zoom=Math.max(0.4,Math.min(4,z));canvas.style.transform='scale('+zoom+')';}
+const stagewrap=document.querySelector('.stagewrap');
+stagewrap.addEventListener('wheel',e=>{e.preventDefault();applyZoom(zoom*(e.deltaY<0?1.12:0.89));},{passive:false});
+stagewrap.addEventListener('dblclick',()=>applyZoom(1));   // двойной клик — сброс масштаба
+function tdist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);}
+canvas.addEventListener('touchstart',e=>{if(e.touches.length===2){pinching=true;down=false;pinchDist=tdist(e.touches);}},{passive:false});
+canvas.addEventListener('touchmove',e=>{if(pinching&&e.touches.length===2){e.preventDefault();const d=tdist(e.touches);if(pinchDist)applyZoom(zoom*d/pinchDist);pinchDist=d;}},{passive:false});
+canvas.addEventListener('touchend',e=>{if(e.touches.length<2){pinching=false;pinchDist=0;}});
 
 function setFold(n){fold=n;syncControls();render();}
 function toggleMirror(){mirror=!mirror;syncControls();render();}
