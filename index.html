@@ -61,8 +61,12 @@
   .chip.on{background:var(--gold);color:#1a1408;border-color:var(--gold);}
   .color-dot{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
   .color-dot.on{border-color:#fff;}
-  .side .spacer{flex:1;min-height:2px;}
-  .btns{padding:8px 22px 12px;display:flex;gap:10px;border-top:1px solid var(--line);}
+  .side-scroll{flex:1 1 auto;overflow-y:auto;min-height:0;}
+  .footer{flex-shrink:0;border-top:1px solid var(--line);background:var(--panel);}
+  .dlrow{padding:10px 22px 0;}
+  .dlbtn{width:100%;padding:11px;border-radius:10px;border:1px solid var(--gold);background:rgba(200,162,74,.10);color:var(--gold-soft);font-size:14px;cursor:pointer;font-family:Arial,sans-serif;letter-spacing:.05em;transition:.15s;}
+  .dlbtn:hover{background:rgba(200,162,74,.2);}
+  .btns{padding:10px 22px 14px;display:flex;gap:10px;}
   .btn{flex:1;padding:13px;border-radius:10px;border:1px solid var(--line);background:#0e0e12;color:var(--text);font-size:14px;cursor:pointer;font-family:Arial,sans-serif;transition:.15s;letter-spacing:.05em;}
   .btn:hover{border-color:var(--gold);}
   .btn.primary{background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#1a1408;border:none;font-weight:700;flex:1.4;}
@@ -107,39 +111,42 @@
       <span class="en">Pick a sign and draw on the circle — the pattern mirrors itself</span></div>
   </div>
   <aside class="side">
-    <h2><span class="ru">Знаки</span><span class="en">Signs</span></h2>
-    <p class="cap"><span class="ru">Коснитесь знака, затем холста.</span><span class="en">Tap a sign, then the canvas.</span></p>
-    <div class="palette" id="palette"></div>
-    <div class="subh"><span class="ru">Не знаете, с чего начать?</span><span class="en">Need a starting point?</span></div>
-    <div class="rnd"><button onclick="randomCompose()">🎲 <span class="ru">Случайный узор</span><span class="en">Random pattern</span></button></div>
-    <div class="varhead" id="varhead"></div>
-    <div class="presets" id="presets"></div>
-    <div class="row"><span class="lab"><span class="ru">Форма</span><span class="en">Shape</span></span>
-      <div class="chip on" id="shR" onclick="setShape('round')"><span class="ru">Круг</span><span class="en">Round</span></div>
-      <div class="chip" id="shS" onclick="setShape('square')"><span class="ru">Квадрат</span><span class="en">Square</span></div>
+    <div class="side-scroll">
+      <h2><span class="ru">Знаки</span><span class="en">Signs</span></h2>
+      <p class="cap"><span class="ru">Коснитесь знака, затем холста.</span><span class="en">Tap a sign, then the canvas.</span></p>
+      <div class="palette" id="palette"></div>
+      <div class="subh"><span class="ru">Не знаете, с чего начать?</span><span class="en">Need a starting point?</span></div>
+      <div class="rnd"><button onclick="randomCompose()">🎲 <span class="ru">Случайный узор</span><span class="en">Random pattern</span></button></div>
+      <div class="varhead" id="varhead"></div>
+      <div class="presets" id="presets"></div>
+      <div class="row"><span class="lab"><span class="ru">Форма</span><span class="en">Shape</span></span>
+        <div class="chip on" id="shR" onclick="setShape('round')"><span class="ru">Круг</span><span class="en">Round</span></div>
+        <div class="chip" id="shS" onclick="setShape('square')"><span class="ru">Квадрат</span><span class="en">Square</span></div>
+      </div>
+      <div class="row" id="symRound"><span class="lab"><span class="ru">Симметрия</span><span class="en">Symmetry</span></span>
+        <div class="chip" id="f6" onclick="setFold(6)">6</div>
+        <div class="chip on" id="f8" onclick="setFold(8)">8</div>
+        <div class="chip" id="f12" onclick="setFold(12)">12</div>
+        <div class="chip" id="mir" onclick="toggleMirror()"><span class="ru">Зеркало</span><span class="en">Mirror</span></div>
+      </div>
+      <div class="row" id="symSquare" style="display:none"><span class="lab"><span class="ru">Оси симметрии</span><span class="en">Axes</span></span>
+        <div class="chip" id="sq1" onclick="setSqMode(1)"><span class="ru">Древо (1 ось)</span><span class="en">Tree (1)</span></div>
+        <div class="chip on" id="sq2" onclick="setSqMode(2)"><span class="ru">Панель (2 оси)</span><span class="en">Panel (2)</span></div>
+      </div>
+      <div class="row" style="padding-bottom:14px"><span class="lab"><span class="ru">Цвет</span><span class="en">Colour</span></span>
+        <div class="color-dot on" style="background:#e6c877" onclick="setColor('#e6c877',this)"></div>
+        <div class="color-dot" style="background:#c86a4a" onclick="setColor('#c86a4a',this)"></div>
+        <div class="color-dot" style="background:#5a9e8f" onclick="setColor('#5a9e8f',this)"></div>
+        <div class="color-dot" style="background:#d8d2c4" onclick="setColor('#d8d2c4',this)"></div>
+      </div>
     </div>
-    <div class="row" id="symRound"><span class="lab"><span class="ru">Симметрия</span><span class="en">Symmetry</span></span>
-      <div class="chip" id="f6" onclick="setFold(6)">6</div>
-      <div class="chip on" id="f8" onclick="setFold(8)">8</div>
-      <div class="chip" id="f12" onclick="setFold(12)">12</div>
-      <div class="chip" id="mir" onclick="toggleMirror()"><span class="ru">Зеркало</span><span class="en">Mirror</span></div>
-    </div>
-    <div class="row" id="symSquare" style="display:none"><span class="lab"><span class="ru">Оси симметрии</span><span class="en">Axes</span></span>
-      <div class="chip" id="sq1" onclick="setSqMode(1)"><span class="ru">Древо (1 ось)</span><span class="en">Tree (1)</span></div>
-      <div class="chip on" id="sq2" onclick="setSqMode(2)"><span class="ru">Панель (2 оси)</span><span class="en">Panel (2)</span></div>
-    </div>
-    <div class="row"><span class="lab"><span class="ru">Цвет</span><span class="en">Colour</span></span>
-      <div class="color-dot on" style="background:#e6c877" onclick="setColor('#e6c877',this)"></div>
-      <div class="color-dot" style="background:#c86a4a" onclick="setColor('#c86a4a',this)"></div>
-      <div class="color-dot" style="background:#5a9e8f" onclick="setColor('#5a9e8f',this)"></div>
-      <div class="color-dot" style="background:#d8d2c4" onclick="setColor('#d8d2c4',this)"></div>
-    </div>
-    <div class="spacer"></div>
-    <div class="btns">
-      <button class="btn ghost" onclick="undo()">↶</button>
-      <button class="btn" onclick="clearAll()"><span class="ru">Очистить</span><span class="en">Clear</span></button>
-      <button class="btn" onclick="download()">⤓ <span class="ru">Скачать</span><span class="en">Save</span></button>
-      <button class="btn primary" onclick="finish()"><span class="ru">Готово</span><span class="en">Done</span></button>
+    <div class="footer">
+      <div class="dlrow"><button class="dlbtn" onclick="download()">⤓ <span class="ru">Скачать узор</span><span class="en">Save pattern</span></button></div>
+      <div class="btns">
+        <button class="btn ghost" onclick="undo()">↶</button>
+        <button class="btn" onclick="clearAll()"><span class="ru">Очистить</span><span class="en">Clear</span></button>
+        <button class="btn primary" onclick="finish()"><span class="ru">Готово</span><span class="en">Done</span></button>
+      </div>
     </div>
   </aside>
 </section>
