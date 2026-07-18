@@ -138,6 +138,7 @@
     <div class="btns">
       <button class="btn ghost" onclick="undo()">↶</button>
       <button class="btn" onclick="clearAll()"><span class="ru">Очистить</span><span class="en">Clear</span></button>
+      <button class="btn" onclick="download()">⤓ <span class="ru">Скачать</span><span class="en">Save</span></button>
       <button class="btn primary" onclick="finish()"><span class="ru">Готово</span><span class="en">Done</span></button>
     </div>
   </aside>
@@ -537,7 +538,19 @@ function finish(){
   animateBuild(g,stamps,{shape,fold,mirror,sqMode},S,null,()=>{
     g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,460,460);g.save();g.scale(S,S);stamps.forEach(s=>drawStamp(g,s));g.restore();});
 }
-function download(){const a=document.createElement('a');a.download='vainakh-pattern.png';a.href=document.getElementById('art').toDataURL('image/png');a.click();}
+function download(){
+  if(!stamps.length){return;}
+  const S=1080,off=document.createElement('canvas');off.width=off.height=S;
+  const g=off.getContext('2d');
+  g.fillStyle='#0b0b0d';g.fillRect(0,0,S,S);
+  const rad=g.createRadialGradient(S/2,S*0.42,0,S/2,S/2,S*0.72);
+  rad.addColorStop(0,'rgba(200,162,74,0.10)');rad.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=rad;g.fillRect(0,0,S,S);
+  const sc=S/820*0.9;g.save();g.translate((S-820*sc)/2,(S-820*sc)/2);g.scale(sc,sc);
+  stamps.forEach(s=>drawStamp(g,s));g.restore();
+  const a=document.createElement('a');a.download='vainakh-uzor.png';a.href=off.toDataURL('image/png');
+  document.body.appendChild(a);a.click();a.remove();
+}
 
 
 const spin=document.getElementById('markspin');let sa='';for(let i=0;i<8;i++){const a=i/8*6.283;sa+=`<line x1="${Math.cos(a)*18}" y1="${Math.sin(a)*18}" x2="${Math.cos(a)*40}" y2="${Math.sin(a)*40}"/>`;}spin.innerHTML=sa+'<circle r="14"/>';
