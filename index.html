@@ -136,8 +136,6 @@
       <div class="color-dot" style="background:#5a9e8f" onclick="setColor('#5a9e8f',this)"></div>
       <div class="color-dot" style="background:#d8d2c4" onclick="setColor('#d8d2c4',this)"></div>
     </div>
-    <div class="elhead" id="elhead" style="display:none"><span class="ru">Элементы эскиза — нажмите элемент, затем знак сверху, чтобы заменить (× удаляет)</span><span class="en">Sketch elements — tap one, then a sign above to replace (× removes)</span></div>
-    <div class="elements" id="elements"></div>
     <div class="spacer"></div>
     <div class="btns">
       <button class="btn ghost" onclick="undo()">↶</button>
@@ -345,28 +343,28 @@ function render(){
 }
 render();
 
-/* ---- "growing" build animation: elements sprout from centre outward ---- */
+/* ---- "drawing" animation: the finished pattern is revealed as if being drawn.
+   Round → a hand sweeps around the circle from the top; square → opens out from
+   the centre. Implemented by clipping a pre-rendered image with a growing shape. ---- */
 let animRAF=null;
-function easeOutBack(t){const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);}
 function animateBuild(g, list, st, scale, guides, onDone){
   if(animRAF)cancelAnimationFrame(animRAF);
-  const order=list.map((s,i)=>i).sort((a,b)=>list[a].r-list[b].r);
-  const n=order.length, win=460, dur=Math.min(1700,520+n*150), stag=n>1?(dur-win)/(n-1):0;
-  const t0=performance.now();
+  const W=g.canvas.width,H=g.canvas.height;
+  const off=document.createElement('canvas');off.width=W;off.height=H;
+  const og=off.getContext('2d');og.save();og.scale(scale,scale);
+  list.forEach(s=>{if(st.shape==='square')drawStampSquare(og,s,st.sqMode);else drawStampRound(og,s,st.fold,st.mirror);});
+  og.restore();
+  const cx=CX*scale,cy=CY*scale,maxR=Math.hypot(W,H);
+  const dur=1500,t0=performance.now();
   function frame(now){
-    const t=now-t0;
-    g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,g.canvas.width,g.canvas.height);
-    g.save();g.scale(scale,scale);
-    if(guides)guides();
-    order.forEach((idx,k)=>{
-      const p=Math.max(0,Math.min(1,(t-k*stag)/win));if(p<=0)return;
-      const e=Math.max(0,easeOutBack(p));
-      const s=list[idx],s2={r:s.r,theta:s.theta,motif:s.motif,color:s.color,size:s.size*(0.1+0.9*e)};
-      g.globalAlpha=Math.min(1,p*1.5);
-      if(st.shape==='square')drawStampSquare(g,s2,st.sqMode);else drawStampRound(g,s2,st.fold,st.mirror);
-    });
-    g.globalAlpha=1;g.restore();
-    if(t<dur)animRAF=requestAnimationFrame(frame);else{animRAF=null;if(onDone)onDone();}
+    const t=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-t,3);
+    g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+    if(guides){g.save();g.scale(scale,scale);guides();g.restore();}
+    g.save();g.beginPath();
+    if(st.shape==='square'){const r=maxR*e;g.rect(cx-r,cy-r,2*r,2*r);}
+    else{g.moveTo(cx,cy);g.arc(cx,cy,maxR,-Math.PI/2,-Math.PI/2+e*2*Math.PI,false);g.closePath();}
+    g.clip();g.drawImage(off,0,0);g.restore();
+    if(t<1)animRAF=requestAnimationFrame(frame);else{animRAF=null;if(onDone)onDone();}
   }
   animRAF=requestAnimationFrame(frame);
 }
