@@ -479,14 +479,12 @@ renderVariants(shape);renderElements();
 function addAt(px,py){
   const rect=canvas.getBoundingClientRect();
   const x=(px-rect.left)*(canvas.width/rect.width)-CX,y=(py-rect.top)*(canvas.height/rect.height)-CY;
-  const r=Math.hypot(x,y);if(r<8||r>380)return;
+  const r=Math.hypot(x,y);if(r>380)return;
   const size=r<150?.85:r<270?1.05:1.25;
   // запрет наложения с учётом размера знака: новый знак не ставится, если он
-  // перекрывает любой уже нарисованный (включая все симметричные копии), и не
-  // ставится там, где его собственные копии налезли бы друг на друга
+  // перекрывает любой уже нарисованный (включая все его симметричные копии).
+  // Собственные копии знака у центра могут сходиться — это нормально.
   const cand={r,theta:Math.atan2(y,x),motif:sel,color,size};
-  const own=stampInstances(cand);
-  for(const [ox,oy,os] of own){const d=Math.hypot(ox-x,oy-y);if(d>0.5&&d<br(size)+br(os))return;}
   for(const [ox,oy,os] of instancePoints()){ if(Math.hypot(ox-x,oy-y)<br(size)+br(os)) return; }
   stamps.push(cand);selEl=-1;render();renderElements();
 }
