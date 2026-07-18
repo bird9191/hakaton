@@ -547,12 +547,11 @@ function finish(){
 }
 function download(){
   if(!stamps.length){return;}
-  const S=1080,off=document.createElement('canvas');off.width=off.height=S;
+  // Print-ready export: 3000×3000 (~25 см при 300 DPI) на сплошном тёмном фоне.
+  // Годится для наклеек, чехлов и другой печати.
+  const S=3000,off=document.createElement('canvas');off.width=off.height=S;
   const g=off.getContext('2d');
   g.fillStyle='#0b0b0d';g.fillRect(0,0,S,S);
-  const rad=g.createRadialGradient(S/2,S*0.42,0,S/2,S/2,S*0.72);
-  rad.addColorStop(0,'rgba(200,162,74,0.10)');rad.addColorStop(1,'rgba(0,0,0,0)');
-  g.fillStyle=rad;g.fillRect(0,0,S,S);
   const sc=S/820*0.9;g.save();g.translate((S-820*sc)/2,(S-820*sc)/2);g.scale(sc,sc);
   stamps.forEach(s=>drawStamp(g,s));g.restore();
   const a=document.createElement('a');a.download='vainakh-uzor.png';a.href=off.toDataURL('image/png');
